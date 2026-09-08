@@ -2,41 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Finance Tracker</title>
+  <title>Weather App</title>
   <style>
-    body { font-family: sans-serif; background: #0d1117; color: #fff; padding: 40px; display: flex; justify-content: center; }
-    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 25px; width: 350px; }
-    input, select { width: 100%; padding: 8px; margin-bottom: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; box-sizing: border-box; }
-    button { width: 100%; padding: 8px; background: #238636; color: white; border: none; cursor: pointer; border-radius: 4px; }
-    ul { list-style: none; padding: 0; }
-    li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #21262d; }
+    body { font-family: sans-serif; background: #0d1117; color: #fff; text-align: center; padding-top: 50px; }
+    .card { background: #161b22; padding: 25px; width: 300px; margin: auto; border-radius: 10px; border: 1px solid #30363d; }
+    input { padding: 8px; width: 80%; margin-bottom: 10px; background: #0d1117; color: #fff; border: 1px solid #30363d; border-radius: 4px; }
+    button { padding: 8px 15px; background: #238636; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h3>Financial Ledger 📊</h3>
-    <div>Balance: ₹<span id="bal">0</span></div><br>
-    <input type="text" id="desc" placeholder="Entry (e.g. Salary, Rent)">
-    <input type="number" id="amt" placeholder="Amount">
-    <select id="type"><option value="cr">Credit (+)</option><option value="dr">Debit (-)</option></select>
-    <button onclick="add()">Add Entry</button>
-    <ul id="list"></ul>
+    <h2>Weather App 🌤️</h2>
+    <input type="text" id="city" placeholder="Enter city...">
+    <button onclick="getW()">Search</button>
+    <div id="res" style="margin-top:15px;"></div>
   </div>
   <script>
-    let list = [];
-    function add() {
-      let d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amt').value), t = document.getElementById('type').value;
-      if(!d || !a) return;
-      list.push({d, a, t});
-      render();
-    }
-    function render() {
-      let b = 0, el = document.getElementById('list'); el.innerHTML = '';
-      list.forEach(i => {
-        if(i.t==='cr') b+=i.a; else b-=i.a;
-        el.innerHTML += `<li><span>${i.d}</span><b>${i.t==='cr'?'+':'-'}₹${i.a}</b></li>`;
-      });
-      document.getElementById('bal').innerText = b;
+    async function getW() {
+      let c = document.getElementById('city').value;
+      let out = document.getElementById('res');
+      if(!c) return;
+      out.innerText = "Loading...";
+      try {
+        let g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${c}`);
+        let gd = await g.json();
+        let { latitude, longitude, name } = gd.results[0];
+        let w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        let wd = await w.json();
+        out.innerHTML = `<b>${name}</b>: ${wd.current_weather.temperature}°C`;
+      } catch(e) { out.innerText = "Not found"; }
     }
   </script>
 </body>
