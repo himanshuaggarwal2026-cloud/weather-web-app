@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Finance Tracker</title>
+  <style>
+    body { font-family: sans-serif; background: #0d1117; color: #fff; padding: 40px; display: flex; justify-content: center; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 25px; width: 350px; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; box-sizing: border-box; }
+    button { width: 100%; padding: 8px; background: #238636; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #21262d; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h3>Financial Ledger 📊</h3>
+    <div>Balance: ₹<span id="bal">0</span></div><br>
+    <input type="text" id="desc" placeholder="Entry (e.g. Salary, Rent)">
+    <input type="number" id="amt" placeholder="Amount">
+    <select id="type"><option value="cr">Credit (+)</option><option value="dr">Debit (-)</option></select>
+    <button onclick="add()">Add Entry</button>
+    <ul id="list"></ul>
+  </div>
+  <script>
+    let list = [];
+    function add() {
+      let d = document.getElementById('desc').value, a = parseFloat(document.getElementById('amt').value), t = document.getElementById('type').value;
+      if(!d || !a) return;
+      list.push({d, a, t});
+      render();
+    }
+    function render() {
+      let b = 0, el = document.getElementById('list'); el.innerHTML = '';
+      list.forEach(i => {
+        if(i.t==='cr') b+=i.a; else b-=i.a;
+        el.innerHTML += `<li><span>${i.d}</span><b>${i.t==='cr'?'+':'-'}₹${i.a}</b></li>`;
+      });
+      document.getElementById('bal').innerText = b;
+    }
+  </script>
+</body>
+</html>
